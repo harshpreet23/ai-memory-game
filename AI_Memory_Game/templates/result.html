@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Memory - Result</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            background: #050a18 url('/static/hp.jpeg') no-repeat center center fixed;
+            background-size: cover; color: white; overflow: hidden;
+            cursor: pointer;
+        }
+        .result-box {
+            background: rgba(0, 0, 0, 0.85); padding: 40px; border-radius: 30px;
+            border: 4px solid #00f2ff; text-align: center;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.5); width: 450px;
+            position: relative; z-index: 10;
+        }
+        .status-text { font-size: 55px; font-weight: bold; text-transform: uppercase; }
+        #loser-emoji { width: 200px; height: 200px; margin: 20px auto; display: none; }
+        #fireworks { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none; z-index: 5; }
+        .retry-btn { background: linear-gradient(45deg, #ff00ff, #00f2ff); color: white; border: none; padding: 15px 40px; font-size: 20px; border-radius: 12px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body onclick="startSound()" onload="setupResult()">
+
+    <audio id="winSound"><source src="/static/sounds/winner.mp3" type="audio/mpeg"></audio>
+    <audio id="crackSound" loop><source src="/static/sounds/crackers.mp3" type="audio/mpeg"></audio>
+    <audio id="loseSound"><source src="/static/sounds/loser.mp3" type="audio/mpeg"></audio>
+
+    <img id="fireworks" src="/static/fireworks.gif">
+
+    <div class="result-box">
+        <div id="statusHeader" class="status-text">GAME OVER</div>
+        <div id="pNameDisplay" style="font-size: 24px; color: #ccc;">PLAYER</div>
+
+        <img id="loser-emoji" src="/static/images/loser.gif">
+
+        <div style="font-size: 35px; margin: 20px 0;">
+            Score: <span id="finalScoreVal" style="color:#00f2ff;">0</span>/10
+        </div>
+        
+        <p id="hint" style="color: #ff00ff; font-weight: bold; font-size: 14px;">(Click anywhere on screen for Sound & Effects)</p>
+        
+        <button class="retry-btn" onclick="window.location.href='/'">Play Again</button>
+    </div>
+
+    <script>
+        let isSoundPlayed = false;
+
+        function setupResult() {
+            let score = parseInt(localStorage.getItem("finalScore") || 0);
+            let name = localStorage.getItem("playerName") || "Player"; // Player name fetch
+            
+            document.getElementById("pNameDisplay").innerText = name;
+            document.getElementById("finalScoreVal").innerText = score;
+
+            if (score >= 7) {
+                // WINNER SETTINGS
+                document.getElementById("statusHeader").innerText = "WINNER! 🏆";
+                document.getElementById("statusHeader").style.color = "#00f2ff";
+                document.getElementById("fireworks").style.display = "none"; // Pehle hide rahega jab tak sound chale
+            } else {
+                // LOSER SETTINGS
+                document.getElementById("statusHeader").innerText = "LOSER! ❌";
+                document.getElementById("statusHeader").style.color = "#ff4d4d";
+                document.getElementById("loser-emoji").style.display = "block";
+                document.querySelector('.result-box').style.borderColor = "#ff4d4d";
+            }
+            
+            // Auto-trigger sound (browser permission ke liye click zaruri ho sakta hai)
+            startSound();
+        }
+
+        function startSound() {
+            if (isSoundPlayed) return;
+            
+            let score = parseInt(localStorage.getItem("finalScore") || 0);
+            const winAud = document.getElementById("winSound");
+            const crackAud = document.getElementById("crackSound");
+            const loseAud = document.getElementById("loseSound");
+            const fireImg = document.getElementById("fireworks");
+
+            if (score >= 7) {
+                // Win Sequence
+                winAud.play().then(() => {
+                    isSoundPlayed = true;
+                    document.getElementById("hint").style.display = "none";
+                    
+                    // Jab Winner song khatam ho jaye, tab crackers aur gif shuru ho
+                    winAud.onended = function() {
+                        crackAud.play();
+                        fireImg.style.display = "block";
+                    };
+                }).catch(e => console.log("Click required for sound"));
+            } else {
+                // Lose Sequence
+                loseAud.play().then(() => {
+                    isSoundPlayed = true;
+                    document.getElementById("hint").style.display = "none";
+                }).catch(e => console.log("Click required for sound"));
+            }
+        }
+    </script>
+</body>
+</html>

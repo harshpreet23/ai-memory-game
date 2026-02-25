@@ -1,0 +1,18 @@
+/* Smooth transitions and Glow Effects */
+body {
+    transition: background 0.5s ease-in-out;
+}
+
+.img-card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #00f2ff;
+    border-color: #00f2ff;
+}
+
+.start-btn, .retry-btn {
+    transition: all 0.3s ease;
+}
+
+.start-btn:active, .retry-btn:active {
+    transform: scale(0.95);
+}

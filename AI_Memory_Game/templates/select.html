@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Memory - Select Images</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #050a18 url('/static/thinking.jpeg.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white; overflow: hidden;
+        }
+
+        .main-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 { font-size: 24px; margin: 10px 0; color: #00f2ff; text-transform: uppercase; }
+        #timer-box { font-size: 45px; font-weight: bold; color: #ff00ff; margin-bottom: 10px; }
+
+        .grid-wrapper { overflow-y: auto; padding: 10px; margin-bottom: 10px; }
+        .grid-container { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
+
+        .img-card {
+            width: 90px; height: 90px;
+            border-radius: 8px; border: 2px solid #444;
+            object-fit: cover; cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .img-card.selected {
+            border-color: #00f2ff;
+            box-shadow: 0 0 15px #00f2ff;
+            transform: scale(1.05);
+        }
+
+        #turn-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .turn-message {
+            font-size: 60px;
+            font-weight: bold;
+            color: #00f2ff;
+            text-shadow: 0 0 20px #00f2ff, 0 0 40px #ff00ff;
+            text-transform: uppercase;
+            text-align: center;
+        }
+    </style>
+</head>
+<body> 
+    <audio id="bgMusic" loop><source src="/static/sounds/memory.mp3" type="audio/mp3"></audio>
+    <audio id="tickSound"><source src="/static/sounds/tick.mp3" type="audio/mp3"></audio>
+
+    <div id="turn-overlay">
+        <div class="turn-message" id="message-text">TIME UP!</div>
+        <p style="font-size: 20px; color: #ff00ff; margin-top: 20px;">Checking your memory...</p>
+    </div>
+
+    <div class="main-container">
+        <h1>Wahi 10 Photos Chuno!</h1>
+        <div id="timer-box"><span id="time-val">20</span>s</div>
+        <div class="grid-wrapper">
+            <div class="grid-container" id="imageGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        let gameStarted = false;
+        let timeLeft = 20;
+        let selectedIDs = []; 
+
+        function loadAllImages() {
+            const grid = document.getElementById('imageGrid');
+            let nums = [];
+            for (let i = 1; i <= 50; i++) nums.push(i);
+            nums.sort(() => Math.random() - 0.5);
+
+            nums.forEach(n => {
+                const img = document.createElement('img');
+                img.src = `/static/images/img${n}.jpeg`; 
+                img.className = 'img-card';
+                img.onclick = function(e) {
+                    e.stopPropagation();
+                    
+                    if (!gameStarted) {
+                        startSelectionTimer();
+                    }
+
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        selectedIDs = selectedIDs.filter(id => id !== n);
+                    } else if (selectedIDs.length < 10) {
+                        this.classList.add('selected');
+                        selectedIDs.push(n);
+                    }
+                };
+                grid.appendChild(img);
+            });
+        }
+
+        function startSelectionTimer() {
+            if (gameStarted) return;
+            gameStarted = true;
+            
+            const bg = document.getElementById('bgMusic');
+            
+            // Volume set to 0.5 (Medium-High)
+            bg.volume = 0.5; 
+            
+            bg.play().catch(err => console.log("Sound play error"));
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-val').innerText = timeLeft;
+                
+                const tick = document.getElementById('tickSound');
+                tick.currentTime = 0;
+                tick.play().catch(e => {});
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    handleGameEnd();
+                }
+            }, 1000);
+        }
+
+        function handleGameEnd() {
+            let targetImages = JSON.parse(localStorage.getItem("targetImages") || "[]");
+            let correctCount = 0;
+
+            selectedIDs.forEach(id => {
+                if (targetImages.includes(id)) {
+                    correctCount++;
+                }
+            });
+
+            localStorage.setItem("finalScore", correctCount);
+            document.getElementById('turn-overlay').style.display = 'flex';
+
+            setTimeout(() => {
+                window.location.href = "/result"; 
+            }, 2500);
+        }
+
+        window.onload = loadAllImages;
+    </script>
+</body>
+</html>

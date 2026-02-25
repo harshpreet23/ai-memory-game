@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Memory - Memorize Phase</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #050a18 url('/static/ai.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white; overflow: hidden;
+        }
+
+        .main-container {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 20px 30px;
+            border-radius: 25px;
+            text-align: center;
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.4);
+            width: fit-content;
+        }
+
+        #player-display {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #00f2ff;
+            text-shadow: 0 0 15px #00f2ff;
+        }
+
+        h1 { font-size: 24px; margin-bottom: 5px; color: #ccc; }
+        
+        #timer-box {
+            font-size: 60px;
+            font-weight: bold;
+            color: #ff00ff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px #ff00ff;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .img-card {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            border: 3px solid #ff00ff;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body onclick="startMemoryGame()">
+
+    <audio id="bgMusic" loop>
+        <source src="/static/sounds/memory.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="tickSound">
+        <source src="/static/sounds/tick.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="main-container">
+        <div id="player-display">GET READY...</div>
+        <h1>Memorize these 10 photos</h1>
+        
+        <div id="timer-box"><span id="time-val">9</span></div>
+
+        <div class="grid-container" id="imageGrid"></div>
+    </div>
+
+    <script>
+        let gameStarted = false;
+        let timeLeft = 9;
+
+        window.onload = function() {
+            // Player ka naam local storage se uthana
+            let name = localStorage.getItem("pName") || "PLAYER";
+            document.getElementById("player-display").innerText = name + " IS WATCHING...";
+            
+            setupImages();
+        };
+
+        function setupImages() {
+            let nums = [];
+            for (let i = 1; i <= 50; i++) nums.push(i);
+            nums.sort(() => Math.random() - 0.5);
+            let selected = nums.slice(0, 10);
+
+            // In 10 images ko save karna taaki select.html mein match kar saken
+            localStorage.setItem("targetImages", JSON.stringify(selected));
+
+            const grid = document.getElementById('imageGrid');
+            selected.forEach(n => {
+                const img = document.createElement('img');
+                img.src = `/static/images/img${n}.jpeg`; 
+                img.className = 'img-card';
+                grid.appendChild(img);
+            });
+        }
+
+        function startMemoryGame() {
+            if (gameStarted) return;
+            gameStarted = true;
+
+            const bg = document.getElementById('bgMusic');
+            const tick = document.getElementById('tickSound');
+            
+            bg.volume = 0.1;
+            bg.play().catch(e => console.log("Sound enabled"));
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-val').innerText = timeLeft;
+                
+                tick.currentTime = 0;
+                tick.play().catch(e => {});
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    window.location.href = "/select";
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

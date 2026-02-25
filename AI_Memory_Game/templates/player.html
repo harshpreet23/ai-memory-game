@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Memory Competition</title>
+    <style>
+        /* 1. Background Settings - Local Circuit Image */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #050a18 url('/static/circuit.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* 2. Central Box with Pink & Blue Neon Glow */
+        .main-box {
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            width: 420px;
+            position: relative;
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 20px #ff00ff, 0 0 40px #00f2ff;
+        }
+
+        h2 {
+            font-size: 26px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p {
+            color: #00f2ff;
+            font-size: 18px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        /* 3. Input Box - Single Player */
+        .input-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 18px;
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        input:focus {
+            border-color: #ff00ff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+
+        /* 4. Start Button Styling */
+        .start-btn {
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
+            color: white;
+            border: none;
+            padding: 15px 45px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+            transition: 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00f2ff;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="clickSound">
+        <source src="/static/sounds/select.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="main-box">
+        <div style="font-size: 50px; margin-bottom: 15px;">🤖</div>
+        <h2>AI Memory Challenge</h2>
+        <p>Target: 7/10 to Win</p>
+
+        <form action="/memory" method="GET" onsubmit="return startFreshGame()">
+            <div class="input-container">
+                <input type="text" id="playerName" placeholder="Enter Your Name" required>
+            </div>
+            
+            <button type="submit" class="start-btn" onmousedown="document.getElementById('clickSound').play();">
+                Start Game
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function startFreshGame() {
+            // Har baar naya game shuru hone par purani memory clear hogi
+            localStorage.clear(); 
+            
+            // Naye player ka naam save hoga
+            let name = document.getElementById('playerName').value;
+            localStorage.setItem('pName', name);
+            
+            return true;
+        }
+    </script>
+
+</body>
+</html>

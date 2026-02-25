@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Memory Challenge</title>
+    <style>
+        /* 1. Background Settings */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial Black', sans-serif;
+            background: radial-gradient(circle at center, #2e1a47 0%, #0f081a 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Pure page ko clickable banane ke liye */
+        .main-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            height: 100vh;
+            padding: 0 5% 0 8%;
+            width: 100%;
+        }
+
+        /* 2. Left Side Text */
+        .text-section {
+            max-width: 45%;
+            z-index: 2;
+        }
+
+        .heading-large {
+            font-size: 90px;
+            font-weight: 900;
+            line-height: 0.9;
+            margin: 10px 0;
+            color: transparent;
+            -webkit-text-stroke: 2px white;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        /* 3. Start Button Box */
+        .start-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px 40px;
+            border-radius: 20px;
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
+            display: inline-block;
+            text-align: center;
+        }
+
+        .start-btn {
+            background: #00aaff;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px #00aaff;
+        }
+
+        /* 4. Robot Section (Right Side) */
+        .robot-section {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .robot-section img {
+            width: 100%;
+            max-width: 750px; 
+            height: auto;
+            filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.3));
+        }
+    </style>
+</head>
+<body onmousedown="document.getElementById('startSound').play();">
+
+    <audio id="startSound">
+        <source src="/static/sounds/start.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="clickSound">
+        <source src="/static/sounds/select.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="main-wrapper">
+        <div class="text-section">
+            <p style="font-size: 24px; letter-spacing: 2px;">ARTIFICIAL INTELLIGENCE IN</p>
+            <h1 class="heading-large">GAMING</h1>
+            <p style="color: #d1d1d1;">Challenge your brain with our AI-powered memory game.</p>
+            <br>
+            
+            <div class="start-box">
+                <div style="margin-bottom: 20px; font-weight: bold;">AI MEMORY CHALLENGE</div>
+                
+                <button class="start-btn" onclick="window.location.href='/player'" onmousedown="event.stopPropagation(); document.getElementById('clickSound').play();">
+    START GAME
+</button>
+            </div>
+        </div>
+
+        <div class="robot-section">
+            <img src="/static/robot.gif" alt="AI Robot">
+        </div>
+    </div>
+
+</body>
+</html>
